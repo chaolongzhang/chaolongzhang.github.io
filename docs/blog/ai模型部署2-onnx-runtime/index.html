@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>AI模型部署(2) - ONNX Runtime - Chaolong(朝龙)</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Chaolong Zhang" /><meta name="description" content="AI模型部署" /><meta name="keywords" content=", , " />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.97.3 with theme even" />
+
+
+<link rel="canonical" href="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx-runtime/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.55476011b4331ca9e12f1d99b02ad45f1bc4558730272450ff634f25febea6a1.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<link rel="stylesheet" href="/css/dark.css">
+<link rel="stylesheet" href="/css/bigfoot-default.css">
+<link rel="stylesheet" href="/css/codeblock.css">
+
+
+<meta property="og:title" content="AI模型部署(2) - ONNX Runtime" />
+<meta property="og:description" content="AI模型部署" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx-runtime/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-05-17T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-05-17T00:00:00+00:00" />
+
+<meta itemprop="name" content="AI模型部署(2) - ONNX Runtime">
+<meta itemprop="description" content="AI模型部署"><meta itemprop="datePublished" content="2022-05-17T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-05-17T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1561">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="AI模型部署(2) - ONNX Runtime"/>
+<meta name="twitter:description" content="AI模型部署"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chaolong Zhang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/publications">
+        <li class="mobile-menu-item">Publications</li>
+      </a><a href="/blog">
+        <li class="mobile-menu-item">Blog</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chaolong Zhang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/publications">Publications</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/blog">Blog</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">AI模型部署(2) - ONNX Runtime</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> May 17, 2022 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2/"> 模型部署 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    <div class="post-content">
+      <h2 id="onnx-runtime-简介">ONNX Runtime 简介</h2>
+<p>ONNX Runtime (ORT) 是Microsoft开源的一个项目，用于跨平台的机器学习模型推理，支持多种编程语言和框架、操作系统及硬件平台。当一个模型从PyTorch、TensorFlow、scikit-learnd等框架转换为ONNX模型后，使用ONNX Runtime即可进行模型推理，而不再需要使用原先的训练框架。这使得模型的部署更为便捷和通用。此外，ONNX Runtime通过内置的图优化策略和集成的硬件加速库，可以获得更快的推理速度。即使是在相同的硬件平台，ONNX Runtime也可以获得比PyTorch和TensorFlow更好的运行速度。</p>
+<p><img src="https://www.onnxruntime.ai/images/ONNX_Runtime_EP1.png" alt="Executing ONNX models across different HW environments"></p>
+<h2 id="onnx-runtime-推理">ONNX Runtime 推理</h2>
+<p>使用ONNX Runtime推理的流程为：</p>
+<ol>
+<li>获取一个模型。可以使用任何深度学习/机器学习框架开发并训练模型，然后导出ONNX模型。</li>
+<li>使用ONNX Runtime加载并执行ONNX模型。</li>
+<li>（可选）使用运行时配置和硬件加速优化模型的计算性能。</li>
+</ol>
+<p>ONNX Runtime支持的编程语言有：Python、C++、C#、C、Java、JavaScript、Objective-C、Julia、Ruby等，支持的平台包括Windows、Linux、MacOS、Web Browser、Android、iOS等。</p>
+<p>新版本的ONNX Runtime还支持加速PyTorch的模型训练过程。</p>
+<h2 id="execution-providers-ep">Execution Providers (EP)</h2>
+<p>ONNX Runtime通过不同的Execution Providers (EP)支持多种硬件加速库，以实现同一个模型部署在不同的软件和硬件平台，并充分使用平台的计算资源和加速器，如CUDA、DirectML、Arm NN、NPU等，一种加速硬件或加速库实现为对应的EP。ONNX把算法模型表示为计算图模式，ONNX Runtime则把计算图的节点分配到对应的计算平台进行计算。由于加速器可能无法支持全部的算子（Operator），而只是支持其中一个子集，因此对应的EP也只能支持该算子子集。如果要求EP执行一个完整的模型，则无法使用该加速器。因此，ONNX Runtime的设计并不要求EP支持所有的算子，而是把一个完整的计算图拆分为多个子图，尽可能多地把子图分配到加速平台，而不被支持的节点则使用默认的EP（CPU）进行计算。整个过程如下图：</p>
+<p><img src="https://www.onnxruntime.ai/images/ONNX_Runtime_EP3.png" alt="ONNX Runtime GetCapability()"></p>
+<h2 id="图优化-graph-optimization">图优化 Graph Optimization</h2>
+<p>ONNX Runtime具有三个等级（Level）的优化，分别为：</p>
+<ol>
+<li>Basic (基础)</li>
+<li>Extended （扩展）</li>
+<li>Layout Optimizations （结构优化）</li>
+</ol>
+<p>优化过程也可按顺序进行，即先进性Basic优化，然后进行Extended优化，最后执行Layout优化。其中Basic优化是平台无关的优化，在拆分子图之前进行。Basic优化主要是冗余的节点和计算，支持的优化有：</p>
+<ol>
+<li>Constant Folding（常量折叠）：识别其中的常量表达式，对其进行求值，然后使用求值结果替代表达式，从而减少推理时的计算量；</li>
+<li>Redundant node eliminations（冗余节点消除）：移除所有的冗余节点，如：
+<ul>
+<li>Identity</li>
+<li>Slice</li>
+<li>Unsqueeze</li>
+<li>Dropout</li>
+</ul>
+</li>
+<li>Semantics-preserving node fusions（节点融合）：合并多个节点为单个节点，如对于Conv和Add两个节点，可以把Add算子合并为Conv的bias。支持的节点融合有：
+<ul>
+<li>Conv Add</li>
+<li>Conv Mul</li>
+<li>Conv BatchNorm</li>
+<li>Relu Clip</li>
+<li>Reshape</li>
+</ul>
+</li>
+</ol>
+<p>Extended优化发生在拆分子图之后，实现更复杂的节点融合，目前只支持CPU和CUDA的EP。</p>
+<p>Layout优化需要改变数据的结构，以获得更高的计算性能提升，目前只支持CPU的EP。目前支持的Layout优化为<strong>NCHWc Optimizer</strong>，即使用NCHWc结构，以增加数据的空间局限性，从而可以获得更好的加速性能，如使用AVX-2和AVX-512。</p>
+<h2 id="量化-quantization">量化 Quantization</h2>
+<p>模型量化是把32-bit浮点型（float）的模型转换为8-bit（甚至4-bit）整型的模型。把32-bit的模型转换为8-bit的模型可以把模型大小减小到原来的1/4，同时可以使用加速指令和硬件（如AVX-2，AVX-512，以及NPU硬件），从而获得更快的执行速度。</p>
+<h2 id="references">References</h2>
+<ol>
+<li>ONNX RUNtime Docs, <a href="https://onnxruntime.ai/docs/">https://onnxruntime.ai/docs/</a></li>
+</ol>
+
+    </div>
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx%E5%AE%9E%E5%88%97/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">AI模型部署(2) - ONNX实列</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B21-onnx/">
+            <span class="next-text nav-default">AI模型部署(1) - ONNX</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://twitter.com/ChaolongZhang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://scholar.google.com/citations?user=_PYtR24AAAAJ" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/chaolongzhang" class="iconfont icon-github" title="github"></a>
+  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Chaolong Zhang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js"></script>
+
+
+
+
+
+
+<script src="/js/bigfoot.min.js"></script>
+<script src="/js/codeblock.js"></script>
+
+
+</body>
+</html>

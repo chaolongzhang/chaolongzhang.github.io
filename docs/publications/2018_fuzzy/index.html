@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>A Fuzzy Neural Network Based Dynamic Data Allocation Model on Heterogeneous Multi-GPUs for Large-scale Computations - Chaolong(朝龙)</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Chaolong Zhang" /><meta name="description" content="The parallel computation capabilities of modern graphics processing units (GPUs) have attracted increasing attention from researchers and engineers who have been conducting high computational throughput studies. However, current single GPU based engineering solutions are often struggling to fulfill their real-time requirements. Thus, the multi-GPU-based approach has become a popular and cost-effective choice for tackling the demands. In those cases, the computational load balancing over multiple GPU “nodes” is often the key and bottleneck that affect the quality and performance of the real-time system." /><meta name="keywords" content=", , " />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.97.3 with theme even" />
+
+
+<link rel="canonical" href="/publications/2018_fuzzy/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.55476011b4331ca9e12f1d99b02ad45f1bc4558730272450ff634f25febea6a1.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<link rel="stylesheet" href="/css/dark.css">
+<link rel="stylesheet" href="/css/bigfoot-default.css">
+<link rel="stylesheet" href="/css/codeblock.css">
+
+
+<meta property="og:title" content="A Fuzzy Neural Network Based Dynamic Data Allocation Model on Heterogeneous Multi-GPUs for Large-scale Computations" />
+<meta property="og:description" content="The parallel computation capabilities of modern graphics processing units (GPUs) have attracted increasing attention from researchers and engineers who have been conducting high computational throughput studies. However, current single GPU based engineering solutions are often struggling to fulfill their real-time requirements. Thus, the multi-GPU-based approach has become a popular and cost-effective choice for tackling the demands. In those cases, the computational load balancing over multiple GPU “nodes” is often the key and bottleneck that affect the quality and performance of the real-time system." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/publications/2018_fuzzy/" /><meta property="article:section" content="publications" />
+<meta property="article:published_time" content="2018-04-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-04-01T00:00:00+00:00" />
+
+<meta itemprop="name" content="A Fuzzy Neural Network Based Dynamic Data Allocation Model on Heterogeneous Multi-GPUs for Large-scale Computations">
+<meta itemprop="description" content="The parallel computation capabilities of modern graphics processing units (GPUs) have attracted increasing attention from researchers and engineers who have been conducting high computational throughput studies. However, current single GPU based engineering solutions are often struggling to fulfill their real-time requirements. Thus, the multi-GPU-based approach has become a popular and cost-effective choice for tackling the demands. In those cases, the computational load balancing over multiple GPU “nodes” is often the key and bottleneck that affect the quality and performance of the real-time system."><meta itemprop="datePublished" content="2018-04-01T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2018-04-01T00:00:00+00:00" />
+<meta itemprop="wordCount" content="248">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="A Fuzzy Neural Network Based Dynamic Data Allocation Model on Heterogeneous Multi-GPUs for Large-scale Computations"/>
+<meta name="twitter:description" content="The parallel computation capabilities of modern graphics processing units (GPUs) have attracted increasing attention from researchers and engineers who have been conducting high computational throughput studies. However, current single GPU based engineering solutions are often struggling to fulfill their real-time requirements. Thus, the multi-GPU-based approach has become a popular and cost-effective choice for tackling the demands. In those cases, the computational load balancing over multiple GPU “nodes” is often the key and bottleneck that affect the quality and performance of the real-time system."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chaolong Zhang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/publications">
+        <li class="mobile-menu-item">Publications</li>
+      </a><a href="/blog">
+        <li class="mobile-menu-item">Blog</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chaolong Zhang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/publications">Publications</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/blog">Blog</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+        <h3>Chaolong Zhang, <b>Zhang, C.L.</b>, Xu, Y.P., Xu, Z.J., He, J., Wang, J., & Adu, J.H. (2018). A Fuzzy Neural Network Based Dynamic Data Allocation Model on Heterogeneous Multi-GPUs for Large-scale Computations. International Journal of Automation and Computing, 15(2), 181-193.</h3>
+          <h4><a href="http://dx.doi.org/10.1007/s11633-018-1120-4">doi:10.1007/s11633-018-1120-4</a>
+          
+          
+
+    </header>
+
+    
+    <div class="post-content">
+      <p>The parallel computation capabilities of modern graphics processing units (GPUs) have attracted increasing attention from researchers and engineers who have been conducting high computational throughput studies. However, current single GPU based engineering solutions are often struggling to fulfill their real-time requirements. Thus, the multi-GPU-based approach has become a popular and cost-effective choice for tackling the demands. In those cases, the computational load balancing over multiple GPU “nodes” is often the key and bottleneck that affect the quality and performance of the real-time system. The existing load balancing approaches are mainly based on the assumption that all GPU nodes in the same computer framework are of equal computational performance, which is often not the case due to cluster design and other legacy issues. This paper presents a novel dynamic load balancing (DLB) model for rapid data division and allocation on heterogeneous GPU nodes based on an innovative fuzzy neural network (FNN). In this research, a 5-state parameter feedback mechanism defining the overall cluster and node performance is proposed. The corresponding FNN-based DLB model will be capable of monitoring and predicting individual node performance under different workload scenarios. A real-time adaptive scheduler has been devised to reorganize the data inputs to each node when necessary to maintain their runtime computational performance. The devised model has been implemented on two dimensional (2D) discrete wavelet transform (DWT) applications for evaluation. Experiment results show that this DLB model enables a high computational throughput while ensuring real-time and precision requirements from complex computational tasks.</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/publications/2018_gesture/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">A Static Hand Gesture Recognition Model based on the Improved Centroid Watershed Algorithm and a Dual-Channel CNN</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/publications/2017_crowd/">
+            <span class="next-text nav-default">Crowd behavior understanding through SIOF feature analysis</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://twitter.com/ChaolongZhang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://scholar.google.com/citations?user=_PYtR24AAAAJ" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/chaolongzhang" class="iconfont icon-github" title="github"></a>
+  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Chaolong Zhang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js"></script>
+
+
+
+
+
+
+<script src="/js/bigfoot.min.js"></script>
+<script src="/js/codeblock.js"></script>
+
+
+</body>
+</html>

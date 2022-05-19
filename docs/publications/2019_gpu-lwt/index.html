@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>A generic parallel computational framework of lifting wavelet transform for online engineering surface filtration - Chaolong(朝龙)</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Chaolong Zhang" /><meta name="description" content="Nowadays, complex geometrical surface texture measurement and evaluation require advanced filtration techniques. Discrete wavelet transform (DWT), especially the second-generation wavelet (Lifting Wavelet Transform – LWT), is the most adopted one due to its unified and abundant characteristics in measured data processing, geometrical feature extraction, manufacturing process planning, and production monitoring. However, when dealing with varied complex functional surfaces, the computational payload for performing DWT in real-time often becomes a core bottleneck in the context of massive measured data and limited computational capacities." /><meta name="keywords" content=", , " />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.97.3 with theme even" />
+
+
+<link rel="canonical" href="/publications/2019_gpu-lwt/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.55476011b4331ca9e12f1d99b02ad45f1bc4558730272450ff634f25febea6a1.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<link rel="stylesheet" href="/css/dark.css">
+<link rel="stylesheet" href="/css/bigfoot-default.css">
+<link rel="stylesheet" href="/css/codeblock.css">
+
+
+<meta property="og:title" content="A generic parallel computational framework of lifting wavelet transform for online engineering surface filtration" />
+<meta property="og:description" content="Nowadays, complex geometrical surface texture measurement and evaluation require advanced filtration techniques. Discrete wavelet transform (DWT), especially the second-generation wavelet (Lifting Wavelet Transform – LWT), is the most adopted one due to its unified and abundant characteristics in measured data processing, geometrical feature extraction, manufacturing process planning, and production monitoring. However, when dealing with varied complex functional surfaces, the computational payload for performing DWT in real-time often becomes a core bottleneck in the context of massive measured data and limited computational capacities." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/publications/2019_gpu-lwt/" /><meta property="article:section" content="publications" />
+<meta property="article:published_time" content="2019-07-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-07-02T00:00:00+00:00" />
+
+<meta itemprop="name" content="A generic parallel computational framework of lifting wavelet transform for online engineering surface filtration">
+<meta itemprop="description" content="Nowadays, complex geometrical surface texture measurement and evaluation require advanced filtration techniques. Discrete wavelet transform (DWT), especially the second-generation wavelet (Lifting Wavelet Transform – LWT), is the most adopted one due to its unified and abundant characteristics in measured data processing, geometrical feature extraction, manufacturing process planning, and production monitoring. However, when dealing with varied complex functional surfaces, the computational payload for performing DWT in real-time often becomes a core bottleneck in the context of massive measured data and limited computational capacities."><meta itemprop="datePublished" content="2019-07-02T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-07-02T00:00:00+00:00" />
+<meta itemprop="wordCount" content="251">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="A generic parallel computational framework of lifting wavelet transform for online engineering surface filtration"/>
+<meta name="twitter:description" content="Nowadays, complex geometrical surface texture measurement and evaluation require advanced filtration techniques. Discrete wavelet transform (DWT), especially the second-generation wavelet (Lifting Wavelet Transform – LWT), is the most adopted one due to its unified and abundant characteristics in measured data processing, geometrical feature extraction, manufacturing process planning, and production monitoring. However, when dealing with varied complex functional surfaces, the computational payload for performing DWT in real-time often becomes a core bottleneck in the context of massive measured data and limited computational capacities."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chaolong Zhang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/publications">
+        <li class="mobile-menu-item">Publications</li>
+      </a><a href="/blog">
+        <li class="mobile-menu-item">Blog</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chaolong Zhang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/publications">Publications</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/blog">Blog</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+        <h3>Chaolong Zhang, Xu, Y., <b>Zhang, C.</b>, Xu, Z., Zhou, J., Wang, K., & Huang, J. (2019). A generic parallel computational framework of lifting wavelet transform for online engineering surface filtration. Signal Processing, 165, 37-56.</h3>
+          <h4><a href="http://dx.doi.org/10.1016/j.sigpro.2019.06.019">doi:10.1016/j.sigpro.2019.06.019</a>
+          
+          
+
+    </header>
+
+    
+    <div class="post-content">
+      <p>Nowadays, complex geometrical surface texture measurement and evaluation require advanced filtration techniques. Discrete wavelet transform (DWT), especially the second-generation wavelet (Lifting Wavelet Transform – LWT), is the most adopted one due to its unified and abundant characteristics in measured data processing, geometrical feature extraction, manufacturing process planning, and production monitoring. However, when dealing with varied complex functional surfaces, the computational payload for performing DWT in real-time often becomes a core bottleneck in the context of massive measured data and limited computational capacities. It is a more prominent problem for the areal surface texture filtration by using 2D DWT. To address the issue, this paper presents a generic parallel computational framework for lifting wavelet transform (GPCF-LWT) based on Graphics Process Unit (GPU) clusters and the Compute Unified Device Architecture (CUDA). Due to its cost-effective hardware design and the powerful parallel computing capacity, the proposed framework can support online (or near real-time) engineering surface filtration for micro- and nano-scale surface metrology through exploring a novel parallel method named LBB model, the improved algorithms of lifting scheme and three implementation optimizations on the heterogeneous multi-GPU systems. The innovative approach enables optimizations on individual GPU node through an overarching framework that is capable of data-oriented dynamic load balancing (DLB) driven by a fuzzy neural network (FNN). The paper concludes with a case study on filtering and extracting manufactured surface topographical characteristics from real surfaces. The experimental results have demonstrated substantial improvements on the GPCF-LWT implementation in terms of computational efficiency, operational robustness, and task generalization.</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/publications/2019_3d_two_stream/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">An Improved Two-stream 3D Convolutional Neural Network for Human Action Recognition</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/publications/2019_dual_stream/">
+            <span class="next-text nav-default">Dual-channel CNN for efficient abnormal behavior identification through crowd feature engineering</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://twitter.com/ChaolongZhang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://scholar.google.com/citations?user=_PYtR24AAAAJ" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/chaolongzhang" class="iconfont icon-github" title="github"></a>
+  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Chaolong Zhang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js"></script>
+
+
+
+
+
+
+<script src="/js/bigfoot.min.js"></script>
+<script src="/js/codeblock.js"></script>
+
+
+</body>
+</html>

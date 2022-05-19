@@ -6,7 +6,7 @@ rssLimit = 20
 
 contentdir = "content"
 layoutdir = "layouts"
-publishdir = "public"
+publishdir = "docs"
 
 
 disableKinds = "taxonomyTerm"

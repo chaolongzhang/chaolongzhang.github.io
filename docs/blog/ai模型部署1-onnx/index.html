@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>AI模型部署(1) - ONNX - Chaolong(朝龙)</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Chaolong" /><meta name="description" content="AI模型部署" /><meta name="keywords" content=", , " />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.97.3 with theme even" />
+
+
+<link rel="canonical" href="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B21-onnx/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.55476011b4331ca9e12f1d99b02ad45f1bc4558730272450ff634f25febea6a1.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<link rel="stylesheet" href="/css/dark.css">
+<link rel="stylesheet" href="/css/bigfoot-default.css">
+<link rel="stylesheet" href="/css/codeblock.css">
+
+
+<meta property="og:title" content="AI模型部署(1) - ONNX" />
+<meta property="og:description" content="AI模型部署" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B21-onnx/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-05-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-05-16T00:00:00+00:00" />
+
+<meta itemprop="name" content="AI模型部署(1) - ONNX">
+<meta itemprop="description" content="AI模型部署"><meta itemprop="datePublished" content="2022-05-16T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-05-16T00:00:00+00:00" />
+<meta itemprop="wordCount" content="985">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="AI模型部署(1) - ONNX"/>
+<meta name="twitter:description" content="AI模型部署"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chaolong Zhang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/publications">
+        <li class="mobile-menu-item">Publications</li>
+      </a><a href="/blog">
+        <li class="mobile-menu-item">Blog</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chaolong Zhang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/publications">Publications</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/blog">Blog</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">AI模型部署(1) - ONNX</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> May 16, 2022 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2/"> 模型部署 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    <div class="post-content">
+      <h2 id="onnx简介">ONNX简介</h2>
+<p>模型部署是指让训练好的模型在特定环中运行的过程。目前已经有很多成熟的深度学习和机器学习框架，如<a href="https://pytorch.org/">PyTorch</a>，<a href="https://www.tensorflow.org/">TensorFlow</a>，<a href="https://scikit-learn.org/">scikit-learn</a>和<a href="https://xgboost.ai/">XGBoost</a>等，但是工业界的开发者往往专注于一种框架和平台，如OpenVINO，TensorRT，CoreML，ARM，NPU等。框架和平台的多样性导致从算法开发和训练到算法部署与应用存在较大的困难，尤其是在边缘计算（Edge Computing）领域，因此需要一种通用的、可交互的平台和工具来简化模型的部署。</p>
+<p><a href="https://onnx.ai/">ONNX</a>（开放神经网络交换格式，Open Neural Network Exchange）是一种用于表示深度学习和机器学习模型的标准。ONNX提供标准的算子、方法和数据类型，用于表示计算图模型。算法模型可以表示为有向无环图，其中节点（Node）代表算子，边代表数据的流向。同时，ONNX也支持算子扩展，以支持自定义的计算方法。使用<a href="https://github.com/lutzroeder/Netron">Netron</a>、<a href="https://github.com/onnx/tutorials/blob/main/tutorials/VisualizingAModel.md">Netdrawer</a>和<a href="https://github.com/zetane/viewer">Zetane</a>工具也可以方便地查看模型的结构。</p>
+<p>此外，ONNX可使模型在不同的框架之间进行转移，允许多种框架和工具之间的交互。目前主流的深度学习和机器学习框架都支持导出ONNX模型，适合用于存储训练好的模型。同时也可以把ONNX模型转换为特定的软件和硬件计算平台，以部署AI应用。</p>
+<h2 id="onnx历史与发展">ONNX历史与发展</h2>
+<p>ONNX最早由Facebook和Microsoft发起的社区项目，之后IBM，华为，Intel，AMD，Arm和高通等公司纷纷加入，目前官网列出的合作伙伴（Partners）就有43个。众多公司和开发者的加入也保证了ONNX的稳定性和可靠性，同时快速迭代也保证了ONNX可以支持最新的算子和方法。</p>
+<p><img src="/files/misc/onnx-logo-partners.jpg" alt="Partners"></p>
+<p>目前支持导出和转换ONNX模型的框架和工具有：</p>
+<p><img src="/files/misc/onnx-logo-frameworks.jpg" alt="Frameworks&amp;Tools"></p>
+<p>支持模型推理的平台有：</p>
+<p><img src="/files/misc/onnx-logo-inference.jpg" alt="Deploy"></p>
+<h2 id="总结">总结</h2>
+<p>相对于其它的框架（<a href="https://github.com/Tencent/ncnn">ncnn</a>, <a href="https://github.com/OAID/Tengine">Tengine&rsquo;s tmfile</a>, <a href="https://github.com/rockchip-linux/rknn-toolkit">RKNN</a>），使用ONNX具有如下有点：</p>
+<ol>
+<li>ONNX模型是平台无关的，可以直接在多个平台部署运行；</li>
+<li>ONNX的发展很快，支持的算子更多；</li>
+<li>由大公司主导研发，可靠性更高。</li>
+</ol>
+<p>因此，ONNX更值得去学习和研究，同时也建议其它推理和（硬件）加速平台直接使用ONNX来表示模型，开发兼容ONNX的后端(backend)，并复用ONNX生态系统的工具（如模型转换、优化、量化和<a href="https://onnxruntime.ai/">ONNX Runtime</a>等）。这种方式可有效减少研发工作量，同时也保证了平台的可用性和通用性。</p>
+<h2 id="参考">参考</h2>
+<ol>
+<li>ONNX， <a href="https://onnx.ai/%E2%80%B8">https://onnx.ai/</a></li>
+</ol>
+
+    </div>
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx-runtime/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">AI模型部署(2) - ONNX Runtime</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://twitter.com/ChaolongZhang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://scholar.google.com/citations?user=_PYtR24AAAAJ" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/chaolongzhang" class="iconfont icon-github" title="github"></a>
+  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Chaolong Zhang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js"></script>
+
+
+
+
+
+
+<script src="/js/bigfoot.min.js"></script>
+<script src="/js/codeblock.js"></script>
+
+
+</body>
+</html>

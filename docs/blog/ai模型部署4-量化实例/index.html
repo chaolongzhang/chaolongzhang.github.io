@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>AI模型部署(4) - 量化实例 - Chaolong(朝龙)</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Chaolong Zhang" /><meta name="description" content="AI模型部署" /><meta name="keywords" content=", , " />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.97.3 with theme even" />
+
+
+<link rel="canonical" href="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B24-%E9%87%8F%E5%8C%96%E5%AE%9E%E4%BE%8B/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.55476011b4331ca9e12f1d99b02ad45f1bc4558730272450ff634f25febea6a1.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<link rel="stylesheet" href="/css/dark.css">
+<link rel="stylesheet" href="/css/bigfoot-default.css">
+<link rel="stylesheet" href="/css/codeblock.css">
+
+
+<meta property="og:title" content="AI模型部署(4) - 量化实例" />
+<meta property="og:description" content="AI模型部署" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B24-%E9%87%8F%E5%8C%96%E5%AE%9E%E4%BE%8B/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-05-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-05-19T00:00:00+00:00" />
+
+<meta itemprop="name" content="AI模型部署(4) - 量化实例">
+<meta itemprop="description" content="AI模型部署"><meta itemprop="datePublished" content="2022-05-19T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-05-19T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1316">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="AI模型部署(4) - 量化实例"/>
+<meta name="twitter:description" content="AI模型部署"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chaolong Zhang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/publications">
+        <li class="mobile-menu-item">Publications</li>
+      </a><a href="/blog">
+        <li class="mobile-menu-item">Blog</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chaolong Zhang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/publications">Publications</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/blog">Blog</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">AI模型部署(4) - 量化实例</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> May 19, 2022 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2/"> 模型部署 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    <div class="post-content">
+      <h2 id="前言">前言</h2>
+<p>通过前面的案例，我们已经实现把当前主流深度学习框架的模型转换为ONNX模型。本文将介绍模型在部署中轻量化和加速的问题。模型量化是把32位的浮点型模型转化为低比特的整型计算模型，如常见的int8和uint8，甚至是int4。理论上，把32位转化到8位，模型文件的大小可以减少为1/4。并且目前的深度学习硬件加速器（如NPU、VPU和TensorRT等）大都是以低比特整型计算为基础。因此，模型量化在模型部署和加速具有重要的作用。更多关于模型量化的理论可以参考Google和高通的两份白皮<sup>1,2</sup>。</p>
+<h2 id="onnx量化">ONNX量化</h2>
+<p>虽然PyTorch和TensFlow框架也已经支持模型量化了，但是ONNX Runtime的量化具有更好的性能。本文使用ONNX Runtime进行模型量化。首先import相关库。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">onnx</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">onnxruntime.quantization</span> <span class="kn">import</span> <span class="n">quantize_dynamic</span><span class="p">,</span> <span class="n">QuantType</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下载ResNet-50预训练模型，将其转化为ONNX模型，然后进行量化：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 模型下载</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;pytorch/vision:v0.10.0&#39;</span><span class="p">,</span> <span class="s1">&#39;resnet50&#39;</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 导出ONNX模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">onnx_model_fp32</span> <span class="o">=</span> <span class="s1">&#39;resnet50.onnx&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">onnx</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">torch_model</span><span class="p">,</span> <span class="n">dummy_input</span><span class="p">,</span> <span class="n">onnx_model_fp32</span><span class="p">,</span> <span class="n">opset_version</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">onnx_model_fp32</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">onnx</span><span class="o">.</span><span class="n">checker</span><span class="o">.</span><span class="n">check_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># print(onnx.helper.printable_graph(model.graph))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 模型量化</span>
+</span></span><span class="line"><span class="cl"><span class="n">onnx_model_uint8</span> <span class="o">=</span> <span class="s1">&#39;resnet50_uint8.onnx&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">quantize_dynamic</span><span class="p">(</span><span class="n">onnx_model_fp32</span><span class="p">,</span> <span class="n">onnx_model_uint8</span><span class="p">,</span> <span class="n">weight_type</span><span class="o">=</span><span class="n">QuantType</span><span class="o">.</span><span class="n">QUInt8</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查量化模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">onnx_model_uint8</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">onnx</span><span class="o">.</span><span class="n">checker</span><span class="o">.</span><span class="n">check_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># print(onnx.helper.printable_graph(model.graph))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对比ONNX模型和量化后的模型进行推理，可以看到两种模型对于同一张图片所得到的TOP-5分类结果是一致的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">softmax</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">transforms</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">onnxruntime</span> <span class="k">as</span> <span class="nn">ort</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 准备数据</span>
+</span></span><span class="line"><span class="cl"><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;assets/dog.jpg&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">input_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">preprocess</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">transforms</span><span class="o">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl"><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">input_tensor</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">input_image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">input_batch</span> <span class="o">=</span> <span class="n">input_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">input_batch_np</span> <span class="o">=</span> <span class="n">input_batch</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ONNX推理函数</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">inference</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">in_data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ort_session</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">InferenceSession</span><span class="p">(</span><span class="s2">&#34;resnet50_torch.onnx&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">outputs</span> <span class="o">=</span> <span class="n">ort_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">None</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="s2">&#34;input.1&#34;</span><span class="p">:</span> <span class="n">in_data</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">softmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">top5_catid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">probabilities</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">top5_prob</span> <span class="o">=</span> <span class="n">probabilities</span><span class="p">[</span><span class="n">top5_catid</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">top5_catid</span><span class="p">,</span> <span class="n">top5_prob</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># fp32模型推理结果</span>
+</span></span><span class="line"><span class="cl"><span class="n">fp32_top5_catid</span><span class="p">,</span> <span class="n">fp32_top5_prob</span> <span class="o">=</span> <span class="n">inference</span><span class="p">(</span><span class="n">onnx_model_fp32</span><span class="p">,</span> <span class="n">input_batch_np</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">uint8_top5_catid</span><span class="p">,</span> <span class="n">uint8_top5_prob</span> <span class="o">=</span> <span class="n">inference</span><span class="p">(</span><span class="n">onnx_model_uint8</span><span class="p">,</span> <span class="n">input_batch_np</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;FP32 result: &#34;</span><span class="p">,</span> <span class="n">fp32_top5_catid</span><span class="p">,</span> <span class="n">fp32_top5_prob</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;UINT8 result: &#34;</span><span class="p">,</span> <span class="n">uint8_top5_catid</span><span class="p">,</span> <span class="n">uint8_top5_prob</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;FP32 == UINT8: &#34;</span><span class="p">,</span> <span class="n">fp32_top5_catid</span> <span class="o">==</span> <span class="n">uint8_top5_catid</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><pre><code>FP32 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+UINT8 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+FP32 == UINT8:  [ True  True  True  True  True]
+</code></pre>
+<h2 id="结语">结语</h2>
+<p>本文简单地介绍了ONNX Runtime的使用，不过由于模型量化目前还处于早期发展阶段，模型量化技术碎片化问题严重，每个硬件和软件平台都使用自己实现的量化算法和推理流程，各平台之间的差异也较大。比如笔者曾经使用了Rockchip的RKNN和Tengine平台，这两个平台都需要对输入数据进行量化，然后在输入到模型进行推理，输出的结果也是量化后的结果，需要对输出进行反量化转化为32为浮点型。而ONNX Runtime的量化模型把输入输出数据的量化也集成了，实现端到端的推理。从上面的例子也可以看到，FP32和UNIT8模型的推理流程完全一致，这种模式简化了开发和调试的难度。笔者认为以ONNX Runtime为基础，统一各平台的量化标准和流程，实现一致的推理过程是解决模型部署碎片化问题的一个方向。</p>
+<p>此外，本文使用的是Post-Training Quantization (PTQ)量化方法，模型量化过程中也会导致精度降低。Quantization-Aware-Training （QAT）量化方法在网络训练过程去模拟量化，让网络越来越向量化后的权重靠近，从而获得更准确的量化权重，但是还是存在精度下降的情况。如何提保证量化后模型的精度还需要进一步研究。</p>
+<h2 id="参考">参考</h2>
+<ol>
+<li>Quantizing deep convolutional networks for efficient inference: A whitepaper，<a href="https://arxiv.org/abs/1806.08342">https://arxiv.org/abs/1806.08342</a></li>
+<li>A White Paper on Neural Network Quantization, <a href="https://arxiv.org/abs/2106.08295">https://arxiv.org/abs/2106.08295</a></li>
+<li>PyTorch Quantization, <a href="https://pytorch.org/docs/stable/quantization.html">https://pytorch.org/docs/stable/quantization.html</a></li>
+<li>Quantize ONNX Models, <a href="https://onnxruntime.ai/docs/performance/quantization.html">https://onnxruntime.ai/docs/performance/quantization.html</a></li>
+</ol>
+
+    </div>
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx%E5%AE%9E%E5%88%97/">
+            <span class="next-text nav-default">AI模型部署(2) - ONNX实列</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://twitter.com/ChaolongZhang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://scholar.google.com/citations?user=_PYtR24AAAAJ" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/chaolongzhang" class="iconfont icon-github" title="github"></a>
+  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Chaolong Zhang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js"></script>
+
+
+
+
+
+
+<script src="/js/bigfoot.min.js"></script>
+<script src="/js/codeblock.js"></script>
+
+
+</body>
+</html>

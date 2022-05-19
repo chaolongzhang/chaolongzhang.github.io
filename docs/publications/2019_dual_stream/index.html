@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Dual-channel CNN for efficient abnormal behavior identification through crowd feature engineering - Chaolong(朝龙)</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Chaolong Zhang" /><meta name="description" content="This research has been investigating an automatic and online crowd anomaly detection model by exploring a novel compound image descriptor generated from live video streams. A dual-channel convolutional neural network (DCCNN) has been set up for efficiently processing scene-related and motion-related crowd information inherited from raw frames and the compound descriptor instances. The novelty of the work stemmed from the creation of the spatio-temporal cuboids in online (or near real-time) manner through dynamically extracting local feature tracklets within the temporal space while handling the foreground region-of-interests (i." /><meta name="keywords" content=", , " />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.97.3 with theme even" />
+
+
+<link rel="canonical" href="/publications/2019_dual_stream/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.55476011b4331ca9e12f1d99b02ad45f1bc4558730272450ff634f25febea6a1.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<link rel="stylesheet" href="/css/dark.css">
+<link rel="stylesheet" href="/css/bigfoot-default.css">
+<link rel="stylesheet" href="/css/codeblock.css">
+
+
+<meta property="og:title" content="Dual-channel CNN for efficient abnormal behavior identification through crowd feature engineering" />
+<meta property="og:description" content="This research has been investigating an automatic and online crowd anomaly detection model by exploring a novel compound image descriptor generated from live video streams. A dual-channel convolutional neural network (DCCNN) has been set up for efficiently processing scene-related and motion-related crowd information inherited from raw frames and the compound descriptor instances. The novelty of the work stemmed from the creation of the spatio-temporal cuboids in online (or near real-time) manner through dynamically extracting local feature tracklets within the temporal space while handling the foreground region-of-interests (i." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/publications/2019_dual_stream/" /><meta property="article:section" content="publications" />
+<meta property="article:published_time" content="2019-07-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-07-01T00:00:00+00:00" />
+
+<meta itemprop="name" content="Dual-channel CNN for efficient abnormal behavior identification through crowd feature engineering">
+<meta itemprop="description" content="This research has been investigating an automatic and online crowd anomaly detection model by exploring a novel compound image descriptor generated from live video streams. A dual-channel convolutional neural network (DCCNN) has been set up for efficiently processing scene-related and motion-related crowd information inherited from raw frames and the compound descriptor instances. The novelty of the work stemmed from the creation of the spatio-temporal cuboids in online (or near real-time) manner through dynamically extracting local feature tracklets within the temporal space while handling the foreground region-of-interests (i."><meta itemprop="datePublished" content="2019-07-01T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-07-01T00:00:00+00:00" />
+<meta itemprop="wordCount" content="255">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Dual-channel CNN for efficient abnormal behavior identification through crowd feature engineering"/>
+<meta name="twitter:description" content="This research has been investigating an automatic and online crowd anomaly detection model by exploring a novel compound image descriptor generated from live video streams. A dual-channel convolutional neural network (DCCNN) has been set up for efficiently processing scene-related and motion-related crowd information inherited from raw frames and the compound descriptor instances. The novelty of the work stemmed from the creation of the spatio-temporal cuboids in online (or near real-time) manner through dynamically extracting local feature tracklets within the temporal space while handling the foreground region-of-interests (i."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chaolong Zhang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/publications">
+        <li class="mobile-menu-item">Publications</li>
+      </a><a href="/blog">
+        <li class="mobile-menu-item">Blog</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chaolong Zhang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/publications">Publications</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/blog">Blog</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+        <h3>Chaolong Zhang, Xu, Y., Lu, L., Xu, Z., He, J., Zhou, J., & <b>Zhang, C</b>. (2019). Dual-channel CNN for efficient abnormal behavior identification through crowd feature engineering. Machine Vision and Applications, 30(5), 945-958.</h3>
+          <h4><a href="http://dx.doi.org/10.1007/s00138-018-0971-6">doi:10.1007/s00138-018-0971-6</a>
+          
+          
+
+    </header>
+
+    
+    <div class="post-content">
+      <p>This research has been investigating an automatic and online crowd anomaly detection model by exploring a novel compound image descriptor generated from live video streams. A dual-channel convolutional neural network (DCCNN) has been set up for efficiently processing scene-related and motion-related crowd information inherited from raw frames and the compound descriptor instances. The novelty of the work stemmed from the creation of the spatio-temporal cuboids in online (or near real-time) manner through dynamically extracting local feature tracklets within the temporal space while handling the foreground region-of-interests (i.e., moving targets) through the exploration of Gaussian Mixture Model in the spatial space. Hence, the extracted foreground blocks can effectively eliminate irrelevant backgrounds and noises from the live streams for reducing the computational costs in the subsequent detecting phases. The devised compound feature descriptor, named as spatio-temporal feature descriptor (STFD), is capable of characterizing the crowd attributes through the measures such as collectiveness, stability, conflict and density in each online generated spatio-temporal cuboid. A STFD instance registers not only the dynamic variation of the targeted crowd over time based on local feature tracklets, but also the interaction information of neighborhoods within a crowd, e.g., the interaction force through the K-nearest neighbor (K-NN) analysis. The DCCNN developed in this research enables online identification of suspicious crowd behaviors based on analyzing the live-feed images and their STFD instances. The proposed model has been developed and evaluated against benchmarking techniques and databases. Experimental results have shown substantial improvements in terms of detection accuracy and efficiency for online crowd abnormal behavior identification.</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/publications/2019_gpu-lwt/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">A generic parallel computational framework of lifting wavelet transform for online engineering surface filtration</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/publications/2018_gesture/">
+            <span class="next-text nav-default">A Static Hand Gesture Recognition Model based on the Improved Centroid Watershed Algorithm and a Dual-Channel CNN</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://twitter.com/ChaolongZhang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://scholar.google.com/citations?user=_PYtR24AAAAJ" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/chaolongzhang" class="iconfont icon-github" title="github"></a>
+  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Chaolong Zhang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js"></script>
+
+
+
+
+
+
+<script src="/js/bigfoot.min.js"></script>
+<script src="/js/codeblock.js"></script>
+
+
+</body>
+</html>
