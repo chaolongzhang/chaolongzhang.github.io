@@ -198,11 +198,11 @@ FP32 == UINT8:  [ True  True  True  True  True]
     
     
     <item>
-      <title>AI模型部署(2) - ONNX实列</title>
-      <link>/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx%E5%AE%9E%E5%88%97/</link>
+      <title>AI模型部署(3) - ONNX实列</title>
+      <link>/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B23-onnx%E5%AE%9E%E5%88%97/</link>
       <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
       
-      <guid>/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx%E5%AE%9E%E5%88%97/</guid>
+      <guid>/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B23-onnx%E5%AE%9E%E5%88%97/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;之前已经介绍过ONNX和ONNX Runtime，本文通过实例介绍它们的使用方法。本文将使用到的程序库即版本（其它版本也可兼容）为：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
