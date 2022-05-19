@@ -307,7 +307,7 @@ FP32 == UINT8:  [ True  True  True  True  True]
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;可以使用Netron查看模型结构，如下图&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;assets/rf_iris.png&#34; alt=&#34;RandomForestClassifier&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/files/misc/rf_iris.png&#34; alt=&#34;RandomForestClassifier&#34;&gt;&lt;/p&gt;
 &lt;p&gt;得到ONNX模型后，就可以使用ONNX Runtime进行推理，此时程序已经不再依赖scikit-learn库。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

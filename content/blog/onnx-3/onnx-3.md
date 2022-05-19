@@ -60,7 +60,7 @@ with open("rf_iris.onnx", "wb") as f:
 
 可以使用Netron查看模型结构，如下图
 
-![RandomForestClassifier](assets/rf_iris.png)
+![RandomForestClassifier](/files/misc/rf_iris.png)
 
 得到ONNX模型后，就可以使用ONNX Runtime进行推理，此时程序已经不再依赖scikit-learn库。
 
