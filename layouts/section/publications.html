@@ -1,0 +1,51 @@
+{{- define "title" }}{{ T "archive" }} - {{ .Site.Title }}{{ end -}}
+
+{{- define "content" }}
+
+{{ $baseurl := .Site.BaseURL }}
+ <article class="post">
+
+<div class="content-wrapper">
+  <div id="content" class="content">
+
+    <!-- post-header -->
+    <header class="post-header">
+      <h1 class="post-title">{{ .Title }}</h1>
+    </header>
+
+    <!-- ☞ <a href = "https://kieranhealy.org/vita.pdf"><em>Full Curriculum Vitae in PDF format</em></a> -->
+    <!-- <br /> -->
+    ☞ <a href = "https://scholar.google.com/citations?user=_PYtR24AAAAJ"><em>Google Scholar Profile</em></a>
+    <br />
+    ☞ <a href = "https://www.researchgate.net/profile/Chaolong-Zhang"><em>ResearchGate Profile</em></a>
+
+
+<!-- <h2>Articles and Book Chapters</h2> -->
+
+{{ range (where (where .Data.Pages "Type" "published") ".Params.kind" "!=" "book").GroupByPublishDate "2006" "desc" }}
+
+<!-- <h3>{{ .Key }}</h3> -->
+{{ range .Pages.ByPublishDate.Reverse }}
+{{ if ne .Params.kind "book" }}
+<p>{{ .Params.citation | safeHTML }} 
+  <a href="{{ .Permalink }}">/ Abstract</a> 
+  {{ if isset .Params "file" }}
+  <a href="{{.Site.BaseURL}}files/papers/{{ .Params.file }}">/ PDF</a>
+  {{ end }}
+  {{ if isset .Params "doi" }}
+  <a href="https://doi.org//{{ .Params.doi }}">/ [{{ .Params.doi }}]</a>
+  {{ end }}
+</p>
+{{ end }}
+{{ end }}
+{{- end}}
+
+
+<!-- <h2>Essays and Reviews</h2> -->
+
+
+  </div>
+</div>
+</article>
+{{- end }}
+

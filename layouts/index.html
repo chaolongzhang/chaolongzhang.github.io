@@ -1,0 +1,43 @@
+{{- define "content" -}}
+
+
+<p>I am a PhD candidate at School of Computing and Engineering in <a href="https://www.hud.ac.uk/">University of Huddersfield</a>, UK. He is also a member of <a href="https://research.hud.ac.uk/institutes-centres/cvic/">Centre for Visual and Immersive Computing (CVIC)</a>. My research interests include Artificial Intelligence, Computer Vision, Deep Learning, Edge Computing, High Performance Computing (HPC) and GPU Computing.
+</p>
+
+<section id="pubs" class="pubs">
+<h1>Some of my Work</h1>  
+<ul>
+  {{ range (where .Site.RegularPages "Section" "in" (slice "publications")) }}  
+
+  {{ if .Params.fave }}
+
+  {{ if .Params.citation }}
+  <li>
+    {{ .Params.citation | safeHTML }}
+    <a href="{{ .Permalink }}">/ Abstract</a> 
+    {{ if isset .Params "file" }}<a href="{{.Site.BaseURL}}files/papers/{{ .Params.file }}">PDF</a>{{ end }}
+    {{ if isset .Params "doi" }}
+    <a href="https://doi.org//{{ .Params.doi }}">/ [{{ .Params.doi }}]</a>
+    {{ end }}
+  </li>
+
+  {{ else }}
+
+    <li>
+      <a href="{{ .Permalink }}"> {{ .Params.title | safeHTML }} </a>
+    </li>
+
+  {{ end }}
+ 
+  {{ end }}
+
+  {{ end }}
+  
+</ul>  
+</section>
+<section>
+<hr>  
+</section>
+
+
+{{- end -}}
