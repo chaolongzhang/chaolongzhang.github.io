@@ -32,7 +32,7 @@ ONNX最早由Facebook和Microsoft发起的社区项目，之后IBM，华为，In
 
 ## 总结
 
-相对于其它的框架（[ncnn](https://github.com/Tencent/ncnn), [Tengine's tmfile](https://github.com/OAID/Tengine), [RKNN](https://github.com/rockchip-linux/rknn-toolkit)），使用ONNX具有如下有点：
+相对于其它的框架（[ncnn](https://github.com/Tencent/ncnn), [Tengine's tmfile](https://github.com/OAID/Tengine), [RKNN](https://github.com/rockchip-linux/rknn-toolkit)），使用ONNX具有如下优点：
 
 1. ONNX模型是平台无关的，可以直接在多个平台部署运行；
 2. ONNX的发展很快，支持的算子更多；

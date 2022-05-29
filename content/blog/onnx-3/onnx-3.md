@@ -8,7 +8,7 @@ categories:
 ---
 
 ## 前言
-之前已经介绍过ONNX和ONNX Runtime，本文通过实例介绍它们的使用方法。本文将使用到的程序库即版本（其它版本也可兼容）为：
+之前已经介绍过ONNX和ONNX Runtime，本文通过实例介绍它们的使用方法。本文将使用到的程序库及版本（其它版本也可兼容）为：
 
 ```
 Python 3.8.5
@@ -86,19 +86,18 @@ print('onnx runtime prediction:', pred_onx)
 print('pred_sk == pred_onx?:', pred_sk == pred_onx)
 ```
 
-    scikit-learn prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2
-     1]
-    onnx runtime prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2
-     1]
-    pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  True  True  True
-      True  True  True  True  True  True  True  True  True  True  True  True
-      True  True  True  True  True  True  True  True  True  True  True  True
-      True  True]
-    
+```
+scikit-learn prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2 1]
+onnx runtime prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2 1]
+pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  True  True  True
+                        True  True  True  True  True  True  True  True  True  True  True  True
+                        True  True  True  True  True  True  True  True  True  True  True  True
+                        True  True]
+```
 
 ## PyTorch to ONNX
 
-使用PyTorch自带的`torch.onnx`模块可以把PyTorch模型转换为ONNX模型。首先导出PyTorch Hub的ResNet-50模型，并转换为ONNX模型。
+使用PyTorch自带的[torch.onnx](https://pytorch.org/docs/stable/onnx.html)模块可以把PyTorch模型转换为ONNX模型。首先导出PyTorch Hub的ResNet-50模型，并转换为ONNX模型。
 
 
 ```python
@@ -155,8 +154,9 @@ top5_prob, top5_catid = torch.topk(probabilities, 5)
 print("PyTorch inference result: ", top5_catid, top5_prob)
 ```
 
-    PyTorch inference result:  tensor([258, 259, 270, 261, 248]) tensor([0.8733, 0.0303, 0.0197, 0.0111, 0.0092])
-    
+```
+PyTorch inference result:  tensor([258, 259, 270, 261, 248]) tensor([0.8733, 0.0303, 0.0197, 0.0111, 0.0092])
+```
 
 
 ```python
@@ -180,12 +180,13 @@ top5_prob = probabilities[top5_catid]
 print("ONNX Runtime inference result: ", top5_catid, top5_prob)
 ```
 
-    ONNX Runtime inference result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
-    
+```
+ONNX Runtime inference result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+```
 
 ## TensorFlow (Keras) to ONNX
 
-使用`tf2onnx`可以把TensorFlow、TensorFlow Lite和Keras模型转化为ONNX模型。首先安装`tf2onnx`
+使用`tf2onnx`可以把TensorFlow、TensorFlow Lite和Keras模型转化为ONNX模型。首先安装[tf2onnx](https://github.com/onnx/tensorflow-onnx)
 
 
 ```python
@@ -242,13 +243,14 @@ onnx_pred = m.run(output_names, {"input": x})
 print('ONNX Predicted:', decode_predictions(onnx_pred[0], top=5)[0])
 ```
 
-    Keras Predicted: [('n02111889', 'Samoyed', 0.9477502), ('n02114548', 'white_wolf', 0.022208065), ('n02111500', 'Great_Pyrenees', 0.00989518), ('n02112018', 'Pomeranian', 0.0060505737), ('n02120079', 'Arctic_fox', 0.003846892)]
-    ONNX Predicted: [('n02111889', 'Samoyed', 0.94775075), ('n02114548', 'white_wolf', 0.022208016), ('n02111500', 'Great_Pyrenees', 0.009895195), ('n02112018', 'Pomeranian', 0.0060506575), ('n02120079', 'Arctic_fox', 0.0038468903)]
-    
+```
+Keras Predicted: [('n02111889', 'Samoyed', 0.9477502), ('n02114548', 'white_wolf', 0.022208065), ('n02111500', 'Great_Pyrenees', 0.00989518), ('n02112018', 'Pomeranian', 0.0060505737), ('n02120079', 'Arctic_fox', 0.003846892)]
+ONNX Predicted: [('n02111889', 'Samoyed', 0.94775075), ('n02114548', 'white_wolf', 0.022208016), ('n02111500', 'Great_Pyrenees', 0.009895195), ('n02112018', 'Pomeranian', 0.0060506575), ('n02120079', 'Arctic_fox', 0.0038468903)]
+```
 
 ## PyTorch to TensorFlow
 
-前面已经完成了PyTorch的转换，这里再演示把PyTorch转换的ONNX模型再次转换为TensorFlow模型。
+前面已经完成了PyTorch的转换，这里再演示把PyTorch转换的ONNX模型再次转换为TensorFlow模型，首先需要安装[onnx-tf](https://github.com/onnx/onnx-tensorflow)。
 
 
 ```python
@@ -267,6 +269,7 @@ tf_rep = prepare(onnx_model)  # prepare tf representation
 tf_rep.export_graph("resnet50_torch_tf")  # export the model
 ```
 
+也可以使用命令行模式转换：
 
 ```python
 !onnx-tf convert -i resnet50_torch.onnx -o resnet50_torch_tf2

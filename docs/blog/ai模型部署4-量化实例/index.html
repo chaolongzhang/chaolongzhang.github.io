@@ -52,7 +52,7 @@
 <meta itemprop="name" content="AI模型部署(4) - 量化实例">
 <meta itemprop="description" content="AI模型部署"><meta itemprop="datePublished" content="2022-05-19T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2022-05-19T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1316">
+<meta itemprop="wordCount" content="1341">
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="AI模型部署(4) - 量化实例"/>
 <meta name="twitter:description" content="AI模型部署"/>
@@ -137,7 +137,7 @@
     
     <div class="post-content">
       <h2 id="前言">前言</h2>
-<p>通过前面的案例，我们已经实现把当前主流深度学习框架的模型转换为ONNX模型。本文将介绍模型在部署中轻量化和加速的问题。模型量化是把32位的浮点型模型转化为低比特的整型计算模型，如常见的int8和uint8，甚至是int4。理论上，把32位转化到8位，模型文件的大小可以减少为1/4。并且目前的深度学习硬件加速器（如NPU、VPU和TensorRT等）大都是以低比特整型计算为基础。因此，模型量化在模型部署和加速具有重要的作用。更多关于模型量化的理论可以参考Google和高通的两份白皮<sup>1,2</sup>。</p>
+<p>通过前面的案例，我们已经实现把深度学习框架的模型转换为ONNX模型，并使用ONNX Runtime进行推理。本文将介绍模型在部署中轻量化和加速的问题。模型量化是把32位的浮点型（FP32）模型转化为低比特的整型计算模型，如常见的int8和uint8，甚至是int4。理论上，把32位转化到8位，模型文件的大小可以减少为1/4。并且目前的深度学习硬件加速器（如NPU、VPU和TensorRT等）大都是以低比特整型计算为基础。因此，模型量化在模型部署和加速具有重要的作用。更多关于模型量化的理论可以参考Google和高通的两份白皮<sup>1,2</sup>。</p>
 <h2 id="onnx量化">ONNX量化</h2>
 <p>虽然PyTorch和TensFlow框架也已经支持模型量化了，但是ONNX Runtime的量化具有更好的性能。本文使用ONNX Runtime进行模型量化。首先import相关库。</p>
 <div class="highlight"><div class="chroma">
@@ -282,7 +282,7 @@
 </span></span><span class="line"><span class="cl">    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">softmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 </span></span><span class="line"><span class="cl">    <span class="n">top5_catid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">probabilities</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
 </span></span><span class="line"><span class="cl">    <span class="n">top5_prob</span> <span class="o">=</span> <span class="n">probabilities</span><span class="p">[</span><span class="n">top5_catid</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">  
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">top5_catid</span><span class="p">,</span> <span class="n">top5_prob</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">
@@ -296,13 +296,21 @@
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;FP32 == UINT8: &#34;</span><span class="p">,</span> <span class="n">fp32_top5_catid</span> <span class="o">==</span> <span class="n">uint8_top5_catid</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><pre><code>FP32 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
-UINT8 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
-FP32 == UINT8:  [ True  True  True  True  True]
-</code></pre>
-<h2 id="结语">结语</h2>
-<p>本文简单地介绍了ONNX Runtime的使用，不过由于模型量化目前还处于早期发展阶段，模型量化技术碎片化问题严重，每个硬件和软件平台都使用自己实现的量化算法和推理流程，各平台之间的差异也较大。比如笔者曾经使用了Rockchip的RKNN和Tengine平台，这两个平台都需要对输入数据进行量化，然后在输入到模型进行推理，输出的结果也是量化后的结果，需要对输出进行反量化转化为32为浮点型。而ONNX Runtime的量化模型把输入输出数据的量化也集成了，实现端到端的推理。从上面的例子也可以看到，FP32和UNIT8模型的推理流程完全一致，这种模式简化了开发和调试的难度。笔者认为以ONNX Runtime为基础，统一各平台的量化标准和流程，实现一致的推理过程是解决模型部署碎片化问题的一个方向。</p>
-<p>此外，本文使用的是Post-Training Quantization (PTQ)量化方法，模型量化过程中也会导致精度降低。Quantization-Aware-Training （QAT）量化方法在网络训练过程去模拟量化，让网络越来越向量化后的权重靠近，从而获得更准确的量化权重，但是还是存在精度下降的情况。如何提保证量化后模型的精度还需要进一步研究。</p>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">FP32 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+</span></span><span class="line"><span class="cl">UINT8 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+</span></span><span class="line"><span class="cl">FP32 == UINT8:  [ True  True  True  True  True]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="结语">结语</h2>
+<p>本文简单地介绍了ONNX Runtime的量化使用，不过由于模型量化目前还处于早期发展阶段，模型量化技术碎片化问题严重，每个硬件和软件平台都使用自己实现的量化算法和推理流程，各平台之间的差异也较大。比如笔者曾经使用了Rockchip的RKNN和Tengine平台，这两个平台都需要对输入数据进行量化，然后在输入到模型进行推理，输出的结果也是量化后的结果，需要对输出进行反量化转化为32为浮点型。而ONNX Runtime的量化模型把输入输出数据的量化也集成了，实现端到端的推理。从上面的例子也可以看到，FP32和UNIT8模型的推理流程完全一致，这种模式简化了开发和调试的难度。笔者认为以ONNX Runtime为基础，统一各平台的量化标准和流程，实现一致的推理过程是解决模型部署碎片化问题的一个方向。</p>
+<p>此外，本文使用的是Post-Training Quantization (PTQ)量化方法，模型量化过程中也会导致精度降低。Quantization-Aware-Training （QAT）量化方法在网络训练过程去模拟量化，让网络越来越向量化后的权重靠近，从而获得更准确的量化权重，但是还是存在精度下降的情况。如何保证量化后模型的精度还需要进一步研究。</p>
 <h2 id="参考">参考</h2>
 <ol>
 <li>Quantizing deep convolutional networks for efficient inference: A whitepaper，<a href="https://arxiv.org/abs/1806.08342">https://arxiv.org/abs/1806.08342</a></li>

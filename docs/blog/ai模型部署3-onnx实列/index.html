@@ -52,7 +52,7 @@
 <meta itemprop="name" content="AI模型部署(3) - ONNX实列">
 <meta itemprop="description" content="AI模型部署"><meta itemprop="datePublished" content="2022-05-18T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2022-05-18T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1546">
+<meta itemprop="wordCount" content="1583">
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="AI模型部署(3) - ONNX实列"/>
 <meta name="twitter:description" content="AI模型部署"/>
@@ -137,7 +137,7 @@
     
     <div class="post-content">
       <h2 id="前言">前言</h2>
-<p>之前已经介绍过ONNX和ONNX Runtime，本文通过实例介绍它们的使用方法。本文将使用到的程序库即版本（其它版本也可兼容）为：</p>
+<p>之前已经介绍过ONNX和ONNX Runtime，本文通过实例介绍它们的使用方法。本文将使用到的程序库及版本（其它版本也可兼容）为：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -255,17 +255,26 @@
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;pred_sk == pred_onx?:&#39;</span><span class="p">,</span> <span class="n">pred_sk</span> <span class="o">==</span> <span class="n">pred_onx</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><pre><code>scikit-learn prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2
- 1]
-onnx runtime prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2
- 1]
-pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  True  True  True
-  True  True  True  True  True  True  True  True  True  True  True  True
-  True  True  True  True  True  True  True  True  True  True  True  True
-  True  True]
-</code></pre>
-<h2 id="pytorch-to-onnx">PyTorch to ONNX</h2>
-<p>使用PyTorch自带的<code>torch.onnx</code>模块可以把PyTorch模型转换为ONNX模型。首先导出PyTorch Hub的ResNet-50模型，并转换为ONNX模型。</p>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">scikit-learn prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2 1]
+</span></span><span class="line"><span class="cl">onnx runtime prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2 1]
+</span></span><span class="line"><span class="cl">pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  True  True  True
+</span></span><span class="line"><span class="cl">                        True  True  True  True  True  True  True  True  True  True  True  True
+</span></span><span class="line"><span class="cl">                        True  True  True  True  True  True  True  True  True  True  True  True
+</span></span><span class="line"><span class="cl">                        True  True]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="pytorch-to-onnx">PyTorch to ONNX</h2>
+<p>使用PyTorch自带的<a href="https://pytorch.org/docs/stable/onnx.html">torch.onnx</a>模块可以把PyTorch模型转换为ONNX模型。首先导出PyTorch Hub的ResNet-50模型，并转换为ONNX模型。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -364,9 +373,15 @@ pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  Tr
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;PyTorch inference result: &#34;</span><span class="p">,</span> <span class="n">top5_catid</span><span class="p">,</span> <span class="n">top5_prob</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><pre><code>PyTorch inference result:  tensor([258, 259, 270, 261, 248]) tensor([0.8733, 0.0303, 0.0197, 0.0111, 0.0092])
-</code></pre>
-<div class="highlight"><div class="chroma">
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">PyTorch inference result:  tensor([258, 259, 270, 261, 248]) tensor([0.8733, 0.0303, 0.0197, 0.0111, 0.0092])
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -408,10 +423,16 @@ pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  Tr
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;ONNX Runtime inference result: &#34;</span><span class="p">,</span> <span class="n">top5_catid</span><span class="p">,</span> <span class="n">top5_prob</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><pre><code>ONNX Runtime inference result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
-</code></pre>
-<h2 id="tensorflow-keras-to-onnx">TensorFlow (Keras) to ONNX</h2>
-<p>使用<code>tf2onnx</code>可以把TensorFlow、TensorFlow Lite和Keras模型转化为ONNX模型。首先安装<code>tf2onnx</code></p>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ONNX Runtime inference result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="tensorflow-keras-to-onnx">TensorFlow (Keras) to ONNX</h2>
+<p>使用<code>tf2onnx</code>可以把TensorFlow、TensorFlow Lite和Keras模型转化为ONNX模型。首先安装<a href="https://github.com/onnx/tensorflow-onnx">tf2onnx</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -505,11 +526,18 @@ pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  Tr
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ONNX Predicted:&#39;</span><span class="p">,</span> <span class="n">decode_predictions</span><span class="p">(</span><span class="n">onnx_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">top</span><span class="o">=</span><span class="mi">5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><pre><code>Keras Predicted: [('n02111889', 'Samoyed', 0.9477502), ('n02114548', 'white_wolf', 0.022208065), ('n02111500', 'Great_Pyrenees', 0.00989518), ('n02112018', 'Pomeranian', 0.0060505737), ('n02120079', 'Arctic_fox', 0.003846892)]
-ONNX Predicted: [('n02111889', 'Samoyed', 0.94775075), ('n02114548', 'white_wolf', 0.022208016), ('n02111500', 'Great_Pyrenees', 0.009895195), ('n02112018', 'Pomeranian', 0.0060506575), ('n02120079', 'Arctic_fox', 0.0038468903)]
-</code></pre>
-<h2 id="pytorch-to-tensorflow">PyTorch to TensorFlow</h2>
-<p>前面已经完成了PyTorch的转换，这里再演示把PyTorch转换的ONNX模型再次转换为TensorFlow模型。</p>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Keras Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.9477502), (&#39;n02114548&#39;, &#39;white_wolf&#39;, 0.022208065), (&#39;n02111500&#39;, &#39;Great_Pyrenees&#39;, 0.00989518), (&#39;n02112018&#39;, &#39;Pomeranian&#39;, 0.0060505737), (&#39;n02120079&#39;, &#39;Arctic_fox&#39;, 0.003846892)]
+</span></span><span class="line"><span class="cl">ONNX Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.94775075), (&#39;n02114548&#39;, &#39;white_wolf&#39;, 0.022208016), (&#39;n02111500&#39;, &#39;Great_Pyrenees&#39;, 0.009895195), (&#39;n02112018&#39;, &#39;Pomeranian&#39;, 0.0060506575), (&#39;n02120079&#39;, &#39;Arctic_fox&#39;, 0.0038468903)]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="pytorch-to-tensorflow">PyTorch to TensorFlow</h2>
+<p>前面已经完成了PyTorch的转换，这里再演示把PyTorch转换的ONNX模型再次转换为TensorFlow模型，首先需要安装<a href="https://github.com/onnx/onnx-tensorflow">onnx-tf</a>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -540,7 +568,8 @@ ONNX Predicted: [('n02111889', 'Samoyed', 0.94775075), ('n02114548', 'white_wolf
 </span></span><span class="line"><span class="cl"><span class="n">tf_rep</span><span class="o">.</span><span class="n">export_graph</span><span class="p">(</span><span class="s2">&#34;resnet50_torch_tf&#34;</span><span class="p">)</span>  <span class="c1"># export the model</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><div class="highlight"><div class="chroma">
+</div><p>也可以使用命令行模式转换：</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>

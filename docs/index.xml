@@ -19,7 +19,7 @@
       
       <guid>/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B24-%E9%87%8F%E5%8C%96%E5%AE%9E%E4%BE%8B/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
-&lt;p&gt;通过前面的案例，我们已经实现把当前主流深度学习框架的模型转换为ONNX模型。本文将介绍模型在部署中轻量化和加速的问题。模型量化是把32位的浮点型模型转化为低比特的整型计算模型，如常见的int8和uint8，甚至是int4。理论上，把32位转化到8位，模型文件的大小可以减少为1/4。并且目前的深度学习硬件加速器（如NPU、VPU和TensorRT等）大都是以低比特整型计算为基础。因此，模型量化在模型部署和加速具有重要的作用。更多关于模型量化的理论可以参考Google和高通的两份白皮&lt;sup&gt;1,2&lt;/sup&gt;。&lt;/p&gt;
+&lt;p&gt;通过前面的案例，我们已经实现把深度学习框架的模型转换为ONNX模型，并使用ONNX Runtime进行推理。本文将介绍模型在部署中轻量化和加速的问题。模型量化是把32位的浮点型（FP32）模型转化为低比特的整型计算模型，如常见的int8和uint8，甚至是int4。理论上，把32位转化到8位，模型文件的大小可以减少为1/4。并且目前的深度学习硬件加速器（如NPU、VPU和TensorRT等）大都是以低比特整型计算为基础。因此，模型量化在模型部署和加速具有重要的作用。更多关于模型量化的理论可以参考Google和高通的两份白皮&lt;sup&gt;1,2&lt;/sup&gt;。&lt;/p&gt;
 &lt;h2 id=&#34;onnx量化&#34;&gt;ONNX量化&lt;/h2&gt;
 &lt;p&gt;虽然PyTorch和TensFlow框架也已经支持模型量化了，但是ONNX Runtime的量化具有更好的性能。本文使用ONNX Runtime进行模型量化。首先import相关库。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -164,7 +164,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;probabilities&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;softmax&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;outputs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;top5_catid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;np&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argsort&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;probabilities&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)[:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;top5_prob&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;probabilities&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;top5_catid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top5_catid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top5_prob&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
@@ -178,13 +178,21 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;FP32 == UINT8: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fp32_top5_catid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;uint8_top5_catid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;pre&gt;&lt;code&gt;FP32 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
-UINT8 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
-FP32 == UINT8:  [ True  True  True  True  True]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;结语&#34;&gt;结语&lt;/h2&gt;
-&lt;p&gt;本文简单地介绍了ONNX Runtime的使用，不过由于模型量化目前还处于早期发展阶段，模型量化技术碎片化问题严重，每个硬件和软件平台都使用自己实现的量化算法和推理流程，各平台之间的差异也较大。比如笔者曾经使用了Rockchip的RKNN和Tengine平台，这两个平台都需要对输入数据进行量化，然后在输入到模型进行推理，输出的结果也是量化后的结果，需要对输出进行反量化转化为32为浮点型。而ONNX Runtime的量化模型把输入输出数据的量化也集成了，实现端到端的推理。从上面的例子也可以看到，FP32和UNIT8模型的推理流程完全一致，这种模式简化了开发和调试的难度。笔者认为以ONNX Runtime为基础，统一各平台的量化标准和流程，实现一致的推理过程是解决模型部署碎片化问题的一个方向。&lt;/p&gt;
-&lt;p&gt;此外，本文使用的是Post-Training Quantization (PTQ)量化方法，模型量化过程中也会导致精度降低。Quantization-Aware-Training （QAT）量化方法在网络训练过程去模拟量化，让网络越来越向量化后的权重靠近，从而获得更准确的量化权重，但是还是存在精度下降的情况。如何提保证量化后模型的精度还需要进一步研究。&lt;/p&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;FP32 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;UINT8 result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;FP32 == UINT8:  [ True  True  True  True  True]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;结语&#34;&gt;结语&lt;/h2&gt;
+&lt;p&gt;本文简单地介绍了ONNX Runtime的量化使用，不过由于模型量化目前还处于早期发展阶段，模型量化技术碎片化问题严重，每个硬件和软件平台都使用自己实现的量化算法和推理流程，各平台之间的差异也较大。比如笔者曾经使用了Rockchip的RKNN和Tengine平台，这两个平台都需要对输入数据进行量化，然后在输入到模型进行推理，输出的结果也是量化后的结果，需要对输出进行反量化转化为32为浮点型。而ONNX Runtime的量化模型把输入输出数据的量化也集成了，实现端到端的推理。从上面的例子也可以看到，FP32和UNIT8模型的推理流程完全一致，这种模式简化了开发和调试的难度。笔者认为以ONNX Runtime为基础，统一各平台的量化标准和流程，实现一致的推理过程是解决模型部署碎片化问题的一个方向。&lt;/p&gt;
+&lt;p&gt;此外，本文使用的是Post-Training Quantization (PTQ)量化方法，模型量化过程中也会导致精度降低。Quantization-Aware-Training （QAT）量化方法在网络训练过程去模拟量化，让网络越来越向量化后的权重靠近，从而获得更准确的量化权重，但是还是存在精度下降的情况。如何保证量化后模型的精度还需要进一步研究。&lt;/p&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;Quantizing deep convolutional networks for efficient inference: A whitepaper，&lt;a href=&#34;https://arxiv.org/abs/1806.08342&#34;&gt;https://arxiv.org/abs/1806.08342&lt;/a&gt;&lt;/li&gt;
@@ -228,7 +236,7 @@ FP32 == UINT8:  [ True  True  True  True  True]
       
       <guid>/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B23-onnx%E5%AE%9E%E5%88%97/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
-&lt;p&gt;之前已经介绍过ONNX和ONNX Runtime，本文通过实例介绍它们的使用方法。本文将使用到的程序库即版本（其它版本也可兼容）为：&lt;/p&gt;
+&lt;p&gt;之前已经介绍过ONNX和ONNX Runtime，本文通过实例介绍它们的使用方法。本文将使用到的程序库及版本（其它版本也可兼容）为：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -346,17 +354,26 @@ FP32 == UINT8:  [ True  True  True  True  True]
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;pred_sk == pred_onx?:&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pred_sk&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pred_onx&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;pre&gt;&lt;code&gt;scikit-learn prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2
- 1]
-onnx runtime prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2
- 1]
-pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  True  True  True
-  True  True  True  True  True  True  True  True  True  True  True  True
-  True  True  True  True  True  True  True  True  True  True  True  True
-  True  True]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;pytorch-to-onnx&#34;&gt;PyTorch to ONNX&lt;/h2&gt;
-&lt;p&gt;使用PyTorch自带的&lt;code&gt;torch.onnx&lt;/code&gt;模块可以把PyTorch模型转换为ONNX模型。首先导出PyTorch Hub的ResNet-50模型，并转换为ONNX模型。&lt;/p&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scikit-learn prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2 1]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;onnx runtime prediction: [2 0 0 1 1 1 0 2 2 1 0 0 2 1 1 2 1 0 0 2 0 0 1 0 2 1 1 2 2 0 1 1 0 2 0 0 2 1]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  True  True  True
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                        True  True  True  True  True  True  True  True  True  True  True  True
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                        True  True  True  True  True  True  True  True  True  True  True  True
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                        True  True]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;pytorch-to-onnx&#34;&gt;PyTorch to ONNX&lt;/h2&gt;
+&lt;p&gt;使用PyTorch自带的&lt;a href=&#34;https://pytorch.org/docs/stable/onnx.html&#34;&gt;torch.onnx&lt;/a&gt;模块可以把PyTorch模型转换为ONNX模型。首先导出PyTorch Hub的ResNet-50模型，并转换为ONNX模型。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -455,9 +472,15 @@ pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  Tr
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;PyTorch inference result: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top5_catid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top5_prob&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;pre&gt;&lt;code&gt;PyTorch inference result:  tensor([258, 259, 270, 261, 248]) tensor([0.8733, 0.0303, 0.0197, 0.0111, 0.0092])
-&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PyTorch inference result:  tensor([258, 259, 270, 261, 248]) tensor([0.8733, 0.0303, 0.0197, 0.0111, 0.0092])
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
@@ -499,10 +522,16 @@ pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  Tr
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ONNX Runtime inference result: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top5_catid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top5_prob&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;pre&gt;&lt;code&gt;ONNX Runtime inference result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;tensorflow-keras-to-onnx&#34;&gt;TensorFlow (Keras) to ONNX&lt;/h2&gt;
-&lt;p&gt;使用&lt;code&gt;tf2onnx&lt;/code&gt;可以把TensorFlow、TensorFlow Lite和Keras模型转化为ONNX模型。首先安装&lt;code&gt;tf2onnx&lt;/code&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ONNX Runtime inference result:  [258 259 270 261 248] [0.8732967  0.03027085 0.01967113 0.01107353 0.00920425]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;tensorflow-keras-to-onnx&#34;&gt;TensorFlow (Keras) to ONNX&lt;/h2&gt;
+&lt;p&gt;使用&lt;code&gt;tf2onnx&lt;/code&gt;可以把TensorFlow、TensorFlow Lite和Keras模型转化为ONNX模型。首先安装&lt;a href=&#34;https://github.com/onnx/tensorflow-onnx&#34;&gt;tf2onnx&lt;/a&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -596,11 +625,18 @@ pred_sk == pred_onx?: [ True  True  True  True  True  True  True  True  True  Tr
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;ONNX Predicted:&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;decode_predictions&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;onnx_pred&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;pre&gt;&lt;code&gt;Keras Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.9477502), (&#39;n02114548&#39;, &#39;white_wolf&#39;, 0.022208065), (&#39;n02111500&#39;, &#39;Great_Pyrenees&#39;, 0.00989518), (&#39;n02112018&#39;, &#39;Pomeranian&#39;, 0.0060505737), (&#39;n02120079&#39;, &#39;Arctic_fox&#39;, 0.003846892)]
-ONNX Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.94775075), (&#39;n02114548&#39;, &#39;white_wolf&#39;, 0.022208016), (&#39;n02111500&#39;, &#39;Great_Pyrenees&#39;, 0.009895195), (&#39;n02112018&#39;, &#39;Pomeranian&#39;, 0.0060506575), (&#39;n02120079&#39;, &#39;Arctic_fox&#39;, 0.0038468903)]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;pytorch-to-tensorflow&#34;&gt;PyTorch to TensorFlow&lt;/h2&gt;
-&lt;p&gt;前面已经完成了PyTorch的转换，这里再演示把PyTorch转换的ONNX模型再次转换为TensorFlow模型。&lt;/p&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Keras Predicted: [(&amp;#39;n02111889&amp;#39;, &amp;#39;Samoyed&amp;#39;, 0.9477502), (&amp;#39;n02114548&amp;#39;, &amp;#39;white_wolf&amp;#39;, 0.022208065), (&amp;#39;n02111500&amp;#39;, &amp;#39;Great_Pyrenees&amp;#39;, 0.00989518), (&amp;#39;n02112018&amp;#39;, &amp;#39;Pomeranian&amp;#39;, 0.0060505737), (&amp;#39;n02120079&amp;#39;, &amp;#39;Arctic_fox&amp;#39;, 0.003846892)]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ONNX Predicted: [(&amp;#39;n02111889&amp;#39;, &amp;#39;Samoyed&amp;#39;, 0.94775075), (&amp;#39;n02114548&amp;#39;, &amp;#39;white_wolf&amp;#39;, 0.022208016), (&amp;#39;n02111500&amp;#39;, &amp;#39;Great_Pyrenees&amp;#39;, 0.009895195), (&amp;#39;n02112018&amp;#39;, &amp;#39;Pomeranian&amp;#39;, 0.0060506575), (&amp;#39;n02120079&amp;#39;, &amp;#39;Arctic_fox&amp;#39;, 0.0038468903)]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;pytorch-to-tensorflow&#34;&gt;PyTorch to TensorFlow&lt;/h2&gt;
+&lt;p&gt;前面已经完成了PyTorch的转换，这里再演示把PyTorch转换的ONNX模型再次转换为TensorFlow模型，首先需要安装&lt;a href=&#34;https://github.com/onnx/onnx-tensorflow&#34;&gt;onnx-tf&lt;/a&gt;。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -631,7 +667,8 @@ ONNX Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.94775075), (&#39;n02
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;tf_rep&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;export_graph&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;resnet50_torch_tf&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# export the model&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;/div&gt;&lt;p&gt;也可以使用命令行模式转换：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
@@ -657,19 +694,19 @@ ONNX Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.94775075), (&#39;n02
       
       <guid>/blog/ai%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B22-onnx-runtime/</guid>
       <description>&lt;h2 id=&#34;onnx-runtime-简介&#34;&gt;ONNX Runtime 简介&lt;/h2&gt;
-&lt;p&gt;ONNX Runtime (ORT) 是Microsoft开源的一个项目，用于跨平台的机器学习模型推理，支持多种编程语言和框架、操作系统及硬件平台。当一个模型从PyTorch、TensorFlow、scikit-learnd等框架转换为ONNX模型后，使用ONNX Runtime即可进行模型推理，而不再需要使用原先的训练框架。这使得模型的部署更为便捷和通用。此外，ONNX Runtime通过内置的图优化策略和集成的硬件加速库，可以获得更快的推理速度。即使是在相同的硬件平台，ONNX Runtime也可以获得比PyTorch和TensorFlow更好的运行速度。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://onnxruntime.ai&#34;&gt;ONNX Runtime (ORT) &lt;/a&gt;是Microsoft开源的一个项目，用于跨平台的机器学习模型推理，支持多种编程语言和框架、操作系统及硬件平台。当一个模型从PyTorch、TensorFlow、scikit-learnd等框架转换为ONNX模型后，使用ONNX Runtime即可进行模型推理，而不再需要原先的训练框架。这使得模型的部署更为便捷和通用。此外，ONNX Runtime通过内置的图优化策略和集成的硬件加速库，可以获得更快的推理速度。即使是在相同的硬件平台，ONNX Runtime也可以获得比PyTorch和TensorFlow更好的运行速度。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://www.onnxruntime.ai/images/ONNX_Runtime_EP1.png&#34; alt=&#34;Executing ONNX models across different HW environments&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;onnx-runtime-推理&#34;&gt;ONNX Runtime 推理&lt;/h2&gt;
 &lt;p&gt;使用ONNX Runtime推理的流程为：&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;获取一个模型。可以使用任何深度学习/机器学习框架开发并训练模型，然后导出ONNX模型。&lt;/li&gt;
+&lt;li&gt;获取一个模型。可以使用任何深度学习/机器学习框架开发并训练，然后导出ONNX模型。&lt;/li&gt;
 &lt;li&gt;使用ONNX Runtime加载并执行ONNX模型。&lt;/li&gt;
 &lt;li&gt;（可选）使用运行时配置和硬件加速优化模型的计算性能。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;ONNX Runtime支持的编程语言有：Python、C++、C#、C、Java、JavaScript、Objective-C、Julia、Ruby等，支持的平台包括Windows、Linux、MacOS、Web Browser、Android、iOS等。&lt;/p&gt;
 &lt;p&gt;新版本的ONNX Runtime还支持加速PyTorch的模型训练过程。&lt;/p&gt;
 &lt;h2 id=&#34;execution-providers-ep&#34;&gt;Execution Providers (EP)&lt;/h2&gt;
-&lt;p&gt;ONNX Runtime通过不同的Execution Providers (EP)支持多种硬件加速库，以实现同一个模型部署在不同的软件和硬件平台，并充分使用平台的计算资源和加速器，如CUDA、DirectML、Arm NN、NPU等，一种加速硬件或加速库实现为对应的EP。ONNX把算法模型表示为计算图模式，ONNX Runtime则把计算图的节点分配到对应的计算平台进行计算。由于加速器可能无法支持全部的算子（Operator），而只是支持其中一个子集，因此对应的EP也只能支持该算子子集。如果要求EP执行一个完整的模型，则无法使用该加速器。因此，ONNX Runtime的设计并不要求EP支持所有的算子，而是把一个完整的计算图拆分为多个子图，尽可能多地把子图分配到加速平台，而不被支持的节点则使用默认的EP（CPU）进行计算。整个过程如下图：&lt;/p&gt;
+&lt;p&gt;ONNX Runtime通过提供不同的&lt;a href=&#34;https://onnxruntime.ai/docs/execution-providers/&#34;&gt;Execution Providers (EP)&lt;/a&gt;支持多种硬件加速库，以实现同一个模型部署在不同的软件和硬件平台，并充分使用平台的计算资源和加速器，如CUDA、DirectML、Arm NN、NPU等，一种加速硬件或加速库实现为对应的EP。ONNX把算法模型表示为计算图模式，ONNX Runtime则把计算图的节点分配到对应的计算平台进行计算。但是，加速器可能无法支持全部的算子（Operator），而只是支持其中一个子集，因此对应的EP也只能支持该算子子集。如果要求EP执行一个完整的模型，则无法使用该加速器。因此，ONNX Runtime的设计并不要求EP支持所有的算子，而是把一个完整的计算图拆分为多个子图，尽可能多地把子图分配到加速平台，而不被支持的节点则使用默认的EP（CPU）进行计算。整个过程如下图：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://www.onnxruntime.ai/images/ONNX_Runtime_EP3.png&#34; alt=&#34;ONNX Runtime GetCapability()&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;图优化-graph-optimization&#34;&gt;图优化 Graph Optimization&lt;/h2&gt;
 &lt;p&gt;ONNX Runtime具有三个等级（Level）的优化，分别为：&lt;/p&gt;
@@ -678,7 +715,7 @@ ONNX Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.94775075), (&#39;n02
 &lt;li&gt;Extended （扩展）&lt;/li&gt;
 &lt;li&gt;Layout Optimizations （结构优化）&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;优化过程也可按顺序进行，即先进性Basic优化，然后进行Extended优化，最后执行Layout优化。其中Basic优化是平台无关的优化，在拆分子图之前进行。Basic优化主要是冗余的节点和计算，支持的优化有：&lt;/p&gt;
+&lt;p&gt;优化过程也是按顺序进行，即先进行Basic优化，然后进行Extended优化，最后执行Layout优化。其中Basic优化是平台无关的优化，在拆分子图之前进行。Basic优化主要是冗余的节点和计算，支持的优化有：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Constant Folding（常量折叠）：识别其中的常量表达式，对其进行求值，然后使用求值结果替代表达式，从而减少推理时的计算量；&lt;/li&gt;
 &lt;li&gt;Redundant node eliminations（冗余节点消除）：移除所有的冗余节点，如：
@@ -730,7 +767,7 @@ ONNX Predicted: [(&#39;n02111889&#39;, &#39;Samoyed&#39;, 0.94775075), (&#39;n02
 &lt;p&gt;支持模型推理的平台有：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;/files/misc/onnx-logo-inference.jpg&#34; alt=&#34;Deploy&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;相对于其它的框架（&lt;a href=&#34;https://github.com/Tencent/ncnn&#34;&gt;ncnn&lt;/a&gt;, &lt;a href=&#34;https://github.com/OAID/Tengine&#34;&gt;Tengine&amp;rsquo;s tmfile&lt;/a&gt;, &lt;a href=&#34;https://github.com/rockchip-linux/rknn-toolkit&#34;&gt;RKNN&lt;/a&gt;），使用ONNX具有如下有点：&lt;/p&gt;
+&lt;p&gt;相对于其它的框架（&lt;a href=&#34;https://github.com/Tencent/ncnn&#34;&gt;ncnn&lt;/a&gt;, &lt;a href=&#34;https://github.com/OAID/Tengine&#34;&gt;Tengine&amp;rsquo;s tmfile&lt;/a&gt;, &lt;a href=&#34;https://github.com/rockchip-linux/rknn-toolkit&#34;&gt;RKNN&lt;/a&gt;），使用ONNX具有如下优点：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;ONNX模型是平台无关的，可以直接在多个平台部署运行；&lt;/li&gt;
 &lt;li&gt;ONNX的发展很快，支持的算子更多；&lt;/li&gt;
